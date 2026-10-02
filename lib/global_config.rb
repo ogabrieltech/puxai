@@ -2,6 +2,11 @@ class GlobalConfig
   VERSION = 'V1'.freeze
   KEY_PREFIX = 'GLOBAL_CONFIG'.freeze
   DEFAULT_EXPIRY = 1.day
+  PUXAI_BRAND_OVERRIDES = {
+    'INSTALLATION_NAME' => 'PuxAI',
+    'BRAND_NAME' => 'PuxAI',
+    'DISPLAY_MANIFEST' => false
+  }.freeze
 
   class << self
     def get(*args)
@@ -38,6 +43,9 @@ class GlobalConfig
     end
 
     def load_from_cache(config_key)
+      brand_override = PUXAI_BRAND_OVERRIDES[config_key.to_s]
+      return brand_override unless brand_override.nil?
+
       cache_key = "#{VERSION}:#{KEY_PREFIX}:#{config_key}"
       cached_value = $alfred.with { |conn| conn.get(cache_key) }
 
