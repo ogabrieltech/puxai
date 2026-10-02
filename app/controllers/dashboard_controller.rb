@@ -56,6 +56,11 @@ class DashboardController < ActionController::Base
   end
 
   def ensure_installation_onboarding
+    # Railway performs an internal rollout probe against `/` using this host.
+    # Let that probe render the dashboard so first-boot onboarding redirects
+    # do not make an otherwise healthy PuxAI deployment fail.
+    return if request.host == 'healthcheck.railway.app'
+
     redirect_to '/installation/onboarding' if ::Redis::Alfred.get(::Redis::Alfred::CHATWOOT_INSTALLATION_ONBOARDING)
   end
 
