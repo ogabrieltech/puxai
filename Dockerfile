@@ -15,7 +15,10 @@ RUN node /tmp/patch-upstream.cjs
 RUN npm ci --legacy-peer-deps && npm cache clean --force
 # Pinned security patches: Next.js <= 16.4.0 has an upstream image optimization RCE.
 # React RSC contains known denial-of-service issues in earlier patch lines.
-RUN npm install --save-exact --legacy-peer-deps next@16.4.1 eslint-config-next@16.4.1 react@19.2.6 react-dom@19.2.6 sharp@0.35.5
+# The upstream rc9 patch has a stale patch-package version header and should not be applied to patched Baileys rc12.
+RUN rm -f "patches/@whiskeysockets+baileys+7.0.0-rc.9.patch" && npm pkg set "overrides.protobufjs=7.6.6"
+RUN npm install --save-exact --legacy-peer-deps next@16.4.1 eslint-config-next@16.4.1 react@19.2.6 react-dom@19.2.6 sharp@0.35.5 next-auth@5.0.0-beta.32 @whiskeysockets/baileys@7.0.0-rc12
+RUN npm audit fix --legacy-peer-deps
 # Emit machine-readable production audit summary without failing the Docker build.
 RUN npm audit --omit=dev --json > /tmp/security-audit.json || true; node -e 'const a=require("/tmp/security-audit.json"); const v=a.vulnerabilities||{}; console.log("[SECURITY_AUDIT] "+JSON.stringify({counts:a.metadata?.vulnerabilities,critical:Object.entries(v).filter(([k,x])=>x.severity==="critical").map(([k,x])=>({name:k,via:x.via,fix:x.fixAvailable})),high:Object.entries(v).filter(([k,x])=>x.severity==="high").map(([k,x])=>({name:k,fix:x.fixAvailable}))}))'
 RUN npx prisma generate && npx next build --webpack
