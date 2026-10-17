@@ -59,4 +59,28 @@ edit("src/modules/whatsapp/store/autoreply.ts", s => {
   return s;
 });
 
+
+edit("prisma/schema.prisma", s => s + `\n\nmodel CustomerLead {
+  id String @id @default(cuid())
+  sessionId String
+  chatJid String
+  stage String @default("NEW")
+  service String?
+  lastMessageKey String?
+  lastMenuAt DateTime?
+  lastInteractionAt DateTime @default(now())
+  lastReminderAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([sessionId, chatJid])
+  @@index([sessionId, stage])
+}
+`);
+edit("src/modules/whatsapp/instance.ts", s => {
+  s=replaceRequired(s,'import { bindAutoReply } from "./store/autoreply";',
+   'import { bindAutoReply } from "./store/autoreply";\nimport { bindCustomerService } from "./store/customer-service";',"customer service import");
+  return replaceRequired(s,"bindAutoReply(this.socket as WASocket, this.sessionId);",
+    "if (this.sessionId === process.env.OGT_CUSTOMER_SESSION_ID) bindCustomerService(this.socket as WASocket, this.sessionId);\n                else bindAutoReply(this.socket as WASocket, this.sessionId);","customer service wiring");
+});
+
 console.log("ogabrieltechIA privacy, registration and branding patches applied.");

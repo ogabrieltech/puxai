@@ -1,116 +1,158 @@
-// Run once after DB schema sync. Creates only user-requested, private-chat support rules.
-// Automation remains disabled until a security review and explicit activation.
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
-const VERSION = 2;
-const enableAutoReply = process.env.OGT_AUTO_REPLY_ENABLED === "true";
-const rules = [
+const {PrismaClient}=require("@prisma/client");
+const prisma=new PrismaClient();
+const VERSION=4;
+const rules=[
   {
     "keyword": "menu",
-    "response": "Olá! Você está no atendimento da *ogabrieltech*.\n\nEste é um atendimento automatizado inicial para organizar sua solicitação.\n\nDigite uma das opções:\n• *SITE* — criação de sites e landing pages\n• *DESIGN* — artes e identidade visual\n• *AUTOMACAO* — chatbots e automações\n• *NFC* — placas de avaliação do Google\n• *ORCAMENTO* — informações para uma proposta\n• *HUMANO* — atendimento pessoal\n\nSe preferir, descreva sua necessidade por aqui.",
+    "response": "*ogabrieltech | Atendimento*\n\nOlá! Sou o assistente de atendimento da ogabrieltech.\n\nComo posso ajudar?\n\n*1* — Sites e landing pages\n*2* — Design e redes sociais\n*3* — Sistemas e automações\n*4* — Placas NFC para avaliações do Google\n*5* — Outros serviços\n*6* — Falar com Gabriel\n\nResponda com o número da opção. Digite *MENU* para voltar.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
-    "keyword": "site",
-    "response": "*Criação de sites e landing pages*\n\nPara preparar seu orçamento, me envie:\n1. Nome da empresa e segmento\n2. Objetivo do site (institucional, catálogo, vendas ou captação de contatos)\n3. Alguma referência de site que você goste\n4. Prazo desejado\n\nAssim consigo analisar seu projeto. Digite *HUMANO* se preferir atendimento pessoal.",
-    "matchType": "EXACT",
-    "triggerType": "PRIVATE",
-    "isMedia": false
-  },
-  {
-    "keyword": "landing page",
-    "response": "*Criação de sites e landing pages*\n\nPara preparar seu orçamento, me envie:\n1. Nome da empresa e segmento\n2. Objetivo do site (institucional, catálogo, vendas ou captação de contatos)\n3. Alguma referência de site que você goste\n4. Prazo desejado\n\nAssim consigo analisar seu projeto. Digite *HUMANO* se preferir atendimento pessoal.",
+    "keyword": "sites",
+    "response": "*Sites e landing pages*\n\nPara preparar seu orçamento, envie em uma mensagem:\n1. Seu nome e nome da empresa\n2. Objetivo do projeto\n3. Serviços ou produtos a apresentar\n4. Prazo desejado\n5. Referências (se tiver)\n\nGabriel avaliará o projeto e confirmará o investimento. Digite *HUMANO* para falar diretamente com ele.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "design",
-    "response": "*Design e conteúdo para redes sociais*\n\nMe conte:\n1. Nome da marca ou perfil\n2. Que tipo de arte precisa (post, carrossel, anúncio, identidade visual)\n3. Quantidade de peças\n4. Se já tem logo e identidade visual\n\nPode enviar referências nesta conversa. Digite *HUMANO* se preferir.",
-    "matchType": "EXACT",
-    "triggerType": "PRIVATE",
-    "isMedia": false
-  },
-  {
-    "keyword": "artes",
-    "response": "*Design e conteúdo para redes sociais*\n\nMe conte:\n1. Nome da marca ou perfil\n2. Que tipo de arte precisa (post, carrossel, anúncio, identidade visual)\n3. Quantidade de peças\n4. Se já tem logo e identidade visual\n\nPode enviar referências nesta conversa. Digite *HUMANO* se preferir.",
+    "response": "*Design e redes sociais*\n\nMe informe:\n1. Nome da empresa ou perfil\n2. Peças desejadas (posts, carrosséis, identidade visual etc.)\n3. Quantidade aproximada\n4. Prazo desejado\n5. Referências (se tiver)\n\nGabriel avaliará o projeto e confirmará o investimento. Digite *HUMANO* para falar diretamente com ele.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "automacao",
-    "response": "*Automações para seu negócio*\n\nPara entender seu processo, me diga:\n1. Nome da empresa\n2. O que deseja automatizar (WhatsApp, atendimento, formulários, tarefas ou outro)\n3. Qual ferramenta utiliza hoje\n4. Qual resultado espera conseguir\n\nDescreva com suas palavras. Digite *HUMANO* para atendimento pessoal.",
-    "matchType": "EXACT",
-    "triggerType": "PRIVATE",
-    "isMedia": false
-  },
-  {
-    "keyword": "automação",
-    "response": "*Automações para seu negócio*\n\nPara entender seu processo, me diga:\n1. Nome da empresa\n2. O que deseja automatizar (WhatsApp, atendimento, formulários, tarefas ou outro)\n3. Qual ferramenta utiliza hoje\n4. Qual resultado espera conseguir\n\nDescreva com suas palavras. Digite *HUMANO* para atendimento pessoal.",
+    "response": "*Sistemas e automações*\n\nPara entender sua necessidade, envie:\n1. Nome e empresa\n2. O processo que quer automatizar\n3. Ferramentas que já utiliza\n4. Resultado esperado\n5. Prazo desejado\n\nGabriel vai avaliar a viabilidade e elaborar uma proposta.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "nfc",
-    "response": "*Placa NFC para avaliações no Google*\n\nMe informe:\n1. Nome do estabelecimento\n2. Quantas placas você precisa\n3. Cidade para verificar entrega\n4. Se sua empresa já possui perfil no Google\n\nCom esses dados, preparo as próximas orientações. Digite *HUMANO* se preferir.",
+    "response": "*Placas NFC para avaliações do Google*\n\nMe diga:\n1. Nome do estabelecimento\n2. Quantidade de placas desejada\n3. Cidade para entrega\n4. Se já possui perfil da empresa no Google\n\nGabriel vai confirmar disponibilidade e valores.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
-    "keyword": "orcamento",
-    "response": "*Solicitação de orçamento*\n\nEnvie, por favor, o nome da empresa, serviço desejado, um resumo do projeto e o prazo esperado. Pode incluir arquivos ou referências.\n\nAs informações ficarão nesta conversa para análise e retorno pessoal.",
+    "keyword": "outros",
+    "response": "*Outros serviços*\n\nDescreva sua necessidade, nome da empresa (se houver), objetivo e prazo desejado. Gabriel avaliará a possibilidade de atendimento.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
-    "keyword": "orçamento",
-    "response": "*Solicitação de orçamento*\n\nEnvie, por favor, o nome da empresa, serviço desejado, um resumo do projeto e o prazo esperado. Pode incluir arquivos ou referências.\n\nAs informações ficarão nesta conversa para análise e retorno pessoal.",
+    "keyword": "precos",
+    "response": "*Orçamentos*\n\nValores variam de acordo com o tipo e escopo do serviço. Escolha uma opção no *MENU* e descreva sua necessidade para receber uma proposta personalizada.",
+    "matchType": "EXACT",
+    "triggerType": "PRIVATE",
+    "isMedia": false
+  },
+  {
+    "keyword": "prazo",
+    "response": "*Prazo de entrega*\n\nO prazo é informado após avaliação do escopo e materiais necessários. Para solicitar um orçamento, envie *MENU*.",
+    "matchType": "EXACT",
+    "triggerType": "PRIVATE",
+    "isMedia": false
+  },
+  {
+    "keyword": "portfolio",
+    "response": "*Projetos e referências*\n\nGabriel poderá apresentar exemplos de trabalhos relevantes para a sua necessidade. Envie *HUMANO* ou escolha o serviço no *MENU*.",
+    "matchType": "EXACT",
+    "triggerType": "PRIVATE",
+    "isMedia": false
+  },
+  {
+    "keyword": "pagamento",
+    "response": "*Condições de pagamento*\n\nAs condições são definidas na proposta comercial. Nunca envie senhas ou dados completos de cartão neste atendimento.",
+    "matchType": "EXACT",
+    "triggerType": "PRIVATE",
+    "isMedia": false
+  },
+  {
+    "keyword": "horario",
+    "response": "*Atendimento*\n\nAs solicitações ficam registradas por aqui. O retorno pessoal de Gabriel depende da disponibilidade. Envie *HUMANO* para encaminhar sua dúvida.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "humano",
-    "response": "*Atendimento pessoal*\n\nCerto. Escreva seu nome, sua empresa (se houver) e o que precisa. Sua mensagem ficará registrada nesta conversa para que o atendimento seja continuado pessoalmente.\n\nPara rever os serviços, envie *MENU*.",
+    "response": "*Atendimento humano*\n\nEncaminhei esta conversa para Gabriel. Pode explicar o que precisa ou enviar referências e arquivos. O assistente ficará em silêncio para não interromper o atendimento.\n\nDigite *MENU* se quiser reiniciar o atendimento automático.",
+    "matchType": "EXACT",
+    "triggerType": "PRIVATE",
+    "isMedia": false
+  },
+  {
+    "keyword": "recebido",
+    "response": "*Solicitação registrada!*\n\nObrigado pelas informações. Gabriel recebeu uma notificação para analisar seu pedido e responder pessoalmente.\n\nSe necessário, envie mais referências nesta conversa. Para voltar ao início, digite *MENU*.",
+    "matchType": "EXACT",
+    "triggerType": "PRIVATE",
+    "isMedia": false
+  },
+  {
+    "keyword": "complemento",
+    "response": "Pode enviar em uma mensagem seu nome, empresa e uma descrição do serviço desejado? Isso ajuda a preparar uma proposta.",
+    "matchType": "EXACT",
+    "triggerType": "PRIVATE",
+    "isMedia": false
+  },
+  {
+    "keyword": "optout",
+    "response": "Respostas automáticas desativadas nesta conversa. Para voltar a usá-las, digite *INICIAR*.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   }
 ];
-
-// Short and explicit greetings, so a personal-number test with "oi" works.
-// Every other message remains manual unless it matches an exact command.
-const menuRule = rules.find(r => r.keyword === "menu");
-if (!menuRule) throw new Error("Missing menu template");
-for (const keyword of ["oi", "olá", "ola", "bom dia", "boa tarde", "boa noite", "ajuda", "atendimento"]) {
-  rules.push({ keyword, response: menuRule.response, matchType: "EXACT", triggerType: "PRIVATE", isMedia: false });
-}
-const labels = [
+const labels=[
   {
     "name": "Novo lead",
     "color": 6,
     "colorHex": "#9400D3"
   },
   {
-    "name": "Orçamento solicitado",
-    "color": 10,
-    "colorHex": "#FFD700"
-  },
-  {
-    "name": "Aguardando cliente",
+    "name": "Sites e landing pages",
     "color": 4,
     "colorHex": "#0000FF"
   },
   {
-    "name": "Em andamento",
+    "name": "Design e social media",
+    "color": 7,
+    "colorHex": "#FF1493"
+  },
+  {
+    "name": "Sistemas e automações",
+    "color": 5,
+    "colorHex": "#4B0082"
+  },
+  {
+    "name": "Placas NFC",
+    "color": 8,
+    "colorHex": "#00CED1"
+  },
+  {
+    "name": "Outros serviços",
+    "color": 13,
+    "colorHex": "#2F4F4F"
+  },
+  {
+    "name": "Aguardando cliente",
+    "color": 10,
+    "colorHex": "#FFD700"
+  },
+  {
+    "name": "Orçamento solicitado",
     "color": 3,
     "colorHex": "#00FF00"
+  },
+  {
+    "name": "Atendimento humano",
+    "color": 0,
+    "colorHex": "#FF0000"
   },
   {
     "name": "Concluído",
@@ -118,58 +160,27 @@ const labels = [
     "colorHex": "#696969"
   }
 ];
-
-async function main() {
-  const sid = process.env.OGT_CUSTOMER_SESSION_ID;
-  if (!sid) {
-    console.log("[CustomerSetup] No target session specified; skipping.");
-    return;
-  }
-  const session = await prisma.session.findUnique({
-    where: { sessionId: sid },
-    include: { botConfig: true }
-  });
-  if (!session) {
-    console.log("[CustomerSetup] Target session not found; skipping without changing any other session.");
-    return;
-  }
-  const oldConfig = session.config && typeof session.config === "object" && !Array.isArray(session.config)
-    ? session.config : {};
-  if (oldConfig.ogtCustomerServiceVersion === VERSION) {
-    await prisma.botConfig.updateMany({
-      where: { sessionId: session.id },
-      data: { enabled: enableAutoReply, autoReplyMode: "ALL", autoRead: false, alwaysOnline: false, enableSticker: false, enableVideoSticker: false, enablePing: false, enableUptime: false }
-    });
-    console.log(`[CustomerSetup] Already configured. Automatic answering: ${enableAutoReply ? "ENABLED" : "PAUSED"}.`);
-    return;
-  }
-  // Activates only when the explicit Railway switch is enabled. Rules are exact-match and private-chat only.
+async function main(){
+  const sid=process.env.OGT_CUSTOMER_SESSION_ID;
+  if(!sid){console.log("[CustomerSetup] Session not configured.");return;}
+  const session=await prisma.session.findUnique({where:{sessionId:sid},include:{botConfig:true}});
+  if(!session){console.log("[CustomerSetup] Session not found.");return;}
+  const enabled=process.env.OGT_AUTO_REPLY_ENABLED==="true";
+  const prev=session.config&&typeof session.config==="object"&&!Array.isArray(session.config)?session.config:{};
+  const versionChanged=prev.ogtCustomerServiceVersion!==VERSION;
   await prisma.botConfig.upsert({
-    where: { sessionId: session.id },
-    create: { sessionId: session.id, enabled: enableAutoReply, botName: "ogabrieltechIA", botMode: "OWNER", autoReplyMode: "ALL", autoRead: false, alwaysOnline: false, enableSticker: false, enableVideoSticker: false, enablePing: false, enableUptime: false },
-    update: { enabled: enableAutoReply, botName: "ogabrieltechIA", botMode: "OWNER", autoReplyMode: "ALL", autoRead: false, alwaysOnline: false, enableSticker: false, enableVideoSticker: false, enablePing: false, enableUptime: false }
+    where:{sessionId:session.id},
+    create:{sessionId:session.id,enabled,botName:"ogabrieltechIA",botMode:"OWNER",autoReplyMode:"ALL",autoRead:false,alwaysOnline:false,enableSticker:false,enableVideoSticker:false,enablePing:false,enableUptime:false},
+    update:{botName:"ogabrieltechIA",botMode:"OWNER",autoReplyMode:"ALL",autoRead:false,alwaysOnline:false,enableSticker:false,enableVideoSticker:false,enablePing:false,...(versionChanged?{enabled}:{})}
   });
-  for (const rule of rules) {
-    const current = await prisma.autoReply.findFirst({
-      where: { sessionId: session.id, keyword: rule.keyword, triggerType: "PRIVATE" }
-    });
-    if (!current) {
-      await prisma.autoReply.create({ data: { sessionId: session.id, ...rule } });
-    }
+  if(!versionChanged){console.log("[CustomerSetup] Existing flow retained; manual edits preserved. Enabled default: "+enabled);return;}
+  for(const rule of rules){
+    const found=await prisma.autoReply.findFirst({where:{sessionId:session.id,keyword:rule.keyword,triggerType:"PRIVATE"}});
+    if(found)await prisma.autoReply.update({where:{id:found.id},data:{response:rule.response,matchType:"EXACT",triggerType:"PRIVATE",isMedia:false,mediaUrl:null,mediaType:null}});
+    else await prisma.autoReply.create({data:{sessionId:session.id,...rule}});
   }
-  for (const label of labels) {
-    await prisma.label.upsert({
-      where: { sessionId_name: { sessionId: sid, name: label.name } },
-      create: { sessionId: sid, ...label },
-      update: {}
-    });
-  }
-  await prisma.session.update({
-    where: { sessionId: sid },
-    data: { config: { ...oldConfig, ogtCustomerServiceVersion: VERSION } }
-  });
-  console.log(`[CustomerSetup] ${rules.length} exact-match private-chat rules and ${labels.length} CRM labels prepared; automatic answering ${enableAutoReply ? "ENABLED" : "PAUSED"}.`);
+  for(const label of labels) await prisma.label.upsert({where:{sessionId_name:{sessionId:sid,name:label.name}},create:{sessionId:sid,...label},update:{}});
+  await prisma.session.update({where:{sessionId:sid},data:{config:{...prev,ogtCustomerServiceVersion:VERSION}}});
+  console.log("[CustomerSetup] GENERAL FLOW READY: "+rules.length+" templates, "+labels.length+" labels; auto response "+(enabled?"ENABLED":"PAUSED"));
 }
-main()
-  .catch(error => { console.error("[CustomerSetup] Setup failed:", error); process.exitCode = 1; })
-  .finally(async () => prisma.$disconnect());
+main().catch(e=>{console.error("[CustomerSetup]",e);process.exitCode=1}).finally(async()=>prisma.$disconnect());

@@ -29,3 +29,6 @@ The MySQL service must be private, with persistent storage. Use one app replica.
 - Demais opções: SITE, LANDING PAGE, DESIGN, ARTES, AUTOMACAO, AUTOMAÇÃO, NFC, ORCAMENTO, ORÇAMENTO, HUMANO (todas por mensagem exata e em privado).
 - HUMANO envia confirmação ao cliente e cria uma notificação no painel para atendimento manual. O bot não processa mensagens abertas como IA.
 - Não usar em produção contínua sem avaliar os avisos `npm audit` e revisar a segurança da aplicação e o risco de bloqueio do WhatsApp.
+
+## Atendimento geral v4 (independente do site)
+Menu: 1 Sites/LP, 2 Design, 3 Sistemas e automacoes, 4 NFC, 5 Outros, 6 Humano. Os preços não são anunciados. Coleta briefing e cria notificações internas e etiquetas; ao encaminhar para humano o bot silencia nessa conversa. Atendimento somente receptivo, privado, sem campanhas ou IA. Use PARAR para desativar na conversa, INICIAR para retomar. Dependencias upstream precisam de auditoria de segurança antes de uso sensível em produção.
