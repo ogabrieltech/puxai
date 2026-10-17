@@ -32,3 +32,8 @@ The MySQL service must be private, with persistent storage. Use one app replica.
 
 ## Atendimento geral v4 (independente do site)
 Menu: 1 Sites/LP, 2 Design, 3 Sistemas e automacoes, 4 NFC, 5 Outros, 6 Humano. Os preços não são anunciados. Coleta briefing e cria notificações internas e etiquetas; ao encaminhar para humano o bot silencia nessa conversa. Atendimento somente receptivo, privado, sem campanhas ou IA. Use PARAR para desativar na conversa, INICIAR para retomar. Dependencias upstream precisam de auditoria de segurança antes de uso sensível em produção.
+
+### Security changes October 2026
+- Node builder pins Next.js 16.4.1, React 19.2.6, Auth.js / next-auth 5 beta.32, Baileys rc12, and protobufjs 7.6.6. The stale rc9 patch is removed before upgrading Baileys.
+- Unsafe legacy sticker conversion is disabled and its wa-sticker-formatter dependency removed. Dedicated sticker POST returns HTTP 410; regular customer-support text, WhatsApp incoming media, labels, and CRM remain available.
+- Build runs npm audit for production packages, prints counts and any critical findings.

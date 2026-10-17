@@ -83,4 +83,16 @@ edit("src/modules/whatsapp/instance.ts", s => {
     "if (this.sessionId === process.env.OGT_CUSTOMER_SESSION_ID) bindCustomerService(this.socket as WASocket, this.sessionId);\n                else bindAutoReply(this.socket as WASocket, this.sessionId);","customer service wiring");
 });
 
+
+// Disable vulnerable legacy sticker conversion package while leaving text and media chats intact.
+for (const target of [
+ "src/modules/whatsapp/chat.service.ts",
+ "src/modules/whatsapp/bot/command-handler.ts"
+]) {
+  edit(target, s => replaceRequired(s, "import Sticker from \"wa-sticker-formatter\";", "// The legacy sticker conversion dependency was removed due to unresolved security advisories.\nclass Sticker {\n  constructor(_input: Buffer, _options: Record<string, unknown>) {}\n  async toBuffer(): Promise<Buffer> { throw new Error(\"Sticker conversion is disabled for security.\"); }\n}", "legacy sticker importer "+target));
+}
+edit("src/app/api/messages/[sessionId]/[jid]/sticker/route.ts", _s =>
+  'import { NextResponse } from "next/server";\nexport async function POST() { return NextResponse.json({status:false,message:"Conversão de figurinhas desativada por segurança."}, {status:410}); }\n'
+);
+
 console.log("ogabrieltechIA privacy, registration and branding patches applied.");
