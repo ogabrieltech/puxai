@@ -29,3 +29,14 @@ The MySQL service must be private, with persistent storage. Use one app replica.
 - Demais opções: SITE, LANDING PAGE, DESIGN, ARTES, AUTOMACAO, AUTOMAÇÃO, NFC, ORCAMENTO, ORÇAMENTO, HUMANO (todas por mensagem exata e em privado).
 - HUMANO envia confirmação ao cliente e cria uma notificação no painel para atendimento manual. O bot não processa mensagens abertas como IA.
 - Não usar em produção contínua sem avaliar os avisos `npm audit` e revisar a segurança da aplicação e o risco de bloqueio do WhatsApp.
+
+
+## Atendimento comercial versão 3 (site como fonte)
+- Alinhado às três ofertas publicadas em ogabrieltech.com.br: Landing Page Express a partir de R$297, Site Institucional a partir de R$597 e Social Start a partir de R$147. Automações e sistemas: valor sob orçamento.
+- Fluxo por resposta privada: MENU ou saudação -> opções 1-5 -> escopo de serviço -> coleta em uma mensagem -> aviso interno para Gabriel -> modo silencioso para atendimento humano.
+- FAQ: PREÇOS, PRAZO, PORTFÓLIO, DOMÍNIO, MANUTENÇÃO, PAGAMENTO e HORÁRIO.
+- Cadastro mínimo de interesse na tabela CustomerLead: JID, serviço, etapa, carimbos de data; conteúdo da conversa permanece no histórico de mensagens do painel.
+- Etiquetas no CRM são aplicadas ao chat automaticamente. Solicitações humanas e orçamentos criam notificações internas; lembrete diário interno para pedidos humanos sem rótulo Concluído.
+- PAUSAR/SAIR cancela respostas naquela conversa; INICIAR reativa; MENU reinicia o atendimento. Não envia mensagens de marketing, disparos ou follow-ups externos.
+- O painel de regras editáveis guarda os modelos por palavra-chave. O sistema só altera os modelos da marca na migração inicial v3; mudanças feitas depois são preservadas.
+- IMPORTANTE: gateway Baileys não é a API oficial Meta. Dependências upstream apresentam vulnerabilidades de segurança reportadas; revisar antes de confiar dados comerciais sensíveis.
