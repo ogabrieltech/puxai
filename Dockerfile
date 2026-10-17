@@ -6,12 +6,13 @@ RUN git clone https://github.com/mrifqidaffaaditya/WA-AKG.git /wa-akg && cd /wa-
 FROM node:26-alpine AS builder
 RUN apk add --no-cache openssl ca-certificates
 WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=upstream /wa-akg/ ./
 COPY scripts/patch-upstream.cjs /tmp/patch-upstream.cjs
 RUN node /tmp/patch-upstream.cjs
 RUN npm ci --legacy-peer-deps && npm cache clean --force
-RUN npx prisma generate && npm run build
-RUN npm prune --omit=dev && npm install --no-save tsx typescript
+RUN npx prisma generate && npx next build --webpack
+RUN npm prune --omit=dev && npm install --no-save tsx typescript prisma@5.22.0
 
 FROM node:26-alpine AS runner
 RUN apk add --no-cache openssl ca-certificates
