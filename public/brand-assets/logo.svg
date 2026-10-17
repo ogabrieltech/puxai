@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="220" height="56" viewBox="0 0 220 56" fill="none">
-<rect x="2" y="2" width="52" height="52" rx="16" fill="#7C3AED"/>
-<path d="M17 17H31.5C39.5 17 44 21.2 44 28C44 34.8 39.5 39 31.5 39H25V45H17V17ZM25 24V32H31C34.2 32 36 30.7 36 28C36 25.3 34.2 24 31 24H25Z" fill="white"/>
-<circle cx="43" cy="14" r="4" fill="#A78BFA"/>
-<text x="68" y="37" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700" fill="#111118">PuxAI</text>
-</svg>
