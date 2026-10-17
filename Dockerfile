@@ -10,7 +10,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=upstream /wa-akg/ ./
 COPY scripts/patch-upstream.cjs /tmp/patch-upstream.cjs
 COPY scripts/setup-customer-service.cjs ./scripts/setup-customer-service.cjs
-COPY scripts/customer-service.ts ./src/modules/whatsapp/store/customer-service.ts
 RUN node /tmp/patch-upstream.cjs
 RUN npm ci --legacy-peer-deps && npm cache clean --force
 RUN npx prisma generate && npx next build --webpack
