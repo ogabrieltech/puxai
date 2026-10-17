@@ -2,7 +2,8 @@
 // Automation remains disabled until a security review and explicit activation.
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const VERSION = 1;
+const VERSION = 2;
+const enableAutoReply = process.env.OGT_AUTO_REPLY_ENABLED === "true";
 const rules = [
   {
     "keyword": "menu",
@@ -82,6 +83,14 @@ const rules = [
     "isMedia": false
   }
 ];
+
+// Short and explicit greetings, so a personal-number test with "oi" works.
+// Every other message remains manual unless it matches an exact command.
+const menuRule = rules.find(r => r.keyword === "menu");
+if (!menuRule) throw new Error("Missing menu template");
+for (const keyword of ["oi", "olá", "ola", "bom dia", "boa tarde", "boa noite", "ajuda", "atendimento"]) {
+  rules.push({ keyword, response: menuRule.response, matchType: "EXACT", triggerType: "PRIVATE", isMedia: false });
+}
 const labels = [
   {
     "name": "Novo lead",
@@ -127,14 +136,18 @@ async function main() {
   const oldConfig = session.config && typeof session.config === "object" && !Array.isArray(session.config)
     ? session.config : {};
   if (oldConfig.ogtCustomerServiceVersion === VERSION) {
-    console.log("[CustomerSetup] Already configured. Preserving manual edits.");
+    await prisma.botConfig.updateMany({
+      where: { sessionId: session.id },
+      data: { enabled: enableAutoReply, autoReplyMode: "ALL", autoRead: false, alwaysOnline: false, enableSticker: false, enableVideoSticker: false, enablePing: false, enableUptime: false }
+    });
+    console.log(`[CustomerSetup] Already configured. Automatic answering: ${enableAutoReply ? "ENABLED" : "PAUSED"}.`);
     return;
   }
-  // The business phone is connected. Never start unsolicited automatic replies.
+  // Activates only when the explicit Railway switch is enabled. Rules are exact-match and private-chat only.
   await prisma.botConfig.upsert({
     where: { sessionId: session.id },
-    create: { sessionId: session.id, enabled: false, botName: "ogabrieltechIA", botMode: "OWNER", autoReplyMode: "ALL", autoRead: false, alwaysOnline: false },
-    update: { enabled: false, botName: "ogabrieltechIA", autoRead: false, alwaysOnline: false }
+    create: { sessionId: session.id, enabled: enableAutoReply, botName: "ogabrieltechIA", botMode: "OWNER", autoReplyMode: "ALL", autoRead: false, alwaysOnline: false, enableSticker: false, enableVideoSticker: false, enablePing: false, enableUptime: false },
+    update: { enabled: enableAutoReply, botName: "ogabrieltechIA", botMode: "OWNER", autoReplyMode: "ALL", autoRead: false, alwaysOnline: false, enableSticker: false, enableVideoSticker: false, enablePing: false, enableUptime: false }
   });
   for (const rule of rules) {
     const current = await prisma.autoReply.findFirst({
@@ -155,7 +168,7 @@ async function main() {
     where: { sessionId: sid },
     data: { config: { ...oldConfig, ogtCustomerServiceVersion: VERSION } }
   });
-  console.log("[CustomerSetup] 11 text reply templates and 5 CRM labels prepared; automatic answering PAUSED.");
+  console.log(`[CustomerSetup] ${rules.length} exact-match private-chat rules and ${labels.length} CRM labels prepared; automatic answering ${enableAutoReply ? "ENABLED" : "PAUSED"}.`);
 }
 main()
   .catch(error => { console.error("[CustomerSetup] Setup failed:", error); process.exitCode = 1; })

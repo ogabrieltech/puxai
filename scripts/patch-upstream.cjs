@@ -41,4 +41,22 @@ edit("src/server/index.ts", (s) => replaceRequired(s, 'origin: "*"', 'origin: pr
 // Keep Next.js pages free from arbitrary named exports.
 edit("src/app/dashboard/labels/page.tsx", s => replaceRequired(s, "export const WAP_COLORS =", "const WAP_COLORS =", "labels page export"));
 
+
+// Suppress repeated greetings for six hours, even when users say "oi" several times.
+edit("src/modules/whatsapp/store/autoreply.ts", s => {
+  s = replaceRequired(s,
+    "export async function bindAutoReply(sock: WASocket, sessionId: string) {",
+    'const greetingCooldown = new Map<string, number>();\\nconst greetingWords = new Set(["oi", "olá", "ola", "bom dia", "boa tarde", "boa noite", "ajuda", "atendimento"]);\\nexport async function bindAutoReply(sock: WASocket, sessionId: string) {',
+    "autoreply greeting cooldown");
+  s = replaceRequired(s,
+    "if (triggerType === 'PRIVATE' && isGroup) continue;",
+    "if (triggerType === 'PRIVATE' && isGroup) continue;\\n\\n                        if (greetingWords.has(keyword)) {\\n                            const cooldownKey = sessionId + ':' + senderJid;\\n                            const now = Date.now();\\n                            const last = greetingCooldown.get(cooldownKey) || 0;\\n                            if (now - last < 6 * 60 * 60 * 1000) continue;\\n                            greetingCooldown.set(cooldownKey, now);\\n                        }",
+    "autoreply greeting filter");
+  s = replaceRequired(s,
+    "                        break;\\n                    }\\n                }",
+    "                        if (keyword === 'humano' && !isGroup && !fromMe) {\\n                            await prisma.notification.create({\\n                                data: { userId: session.userId, title: 'Atendimento humano solicitado', message: 'Um cliente solicitou atendimento pessoal.', href: '/dashboard/chat/' + encodeURIComponent(remoteJid) }\\n                            }).catch(error => logger.error('AutoReply', 'Could not notify human attendant', error));\\n                        }\\n                        break;\\n                    }\\n                }",
+    "autoreply human notification");
+  return s;
+});
+
 console.log("ogabrieltechIA privacy, registration and branding patches applied.");

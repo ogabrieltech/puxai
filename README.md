@@ -22,3 +22,10 @@ The MySQL service must be private, with persistent storage. Use one app replica.
 - A configuração é idempotente e fica registrada na sessão; mudanças posteriores feitas pelo usuário são preservadas.
 - **Importante:** `BotConfig.enabled = false` na primeira configuração para evitar mensagens automáticas prematuras. Não ativar até correção/revisão das vulnerabilidades de dependências e teste com número secundário.
 - Não envia disparos, não ativa IA, não agenda mensagens e não cria leads automaticamente.
+
+## Atendimento em produção (comandos privados)
+- A chave `OGT_AUTO_REPLY_ENABLED=true` ativa as respostas exatas em mensagens privadas para a sessão `OGT_CUSTOMER_SESSION_ID`.
+- Saudações `oi`, `olá`, `ola`, `bom dia`, `boa tarde`, `boa noite`, `ajuda` e `atendimento` abrem o menu, no máximo uma vez a cada 6 horas por remetente enquanto o processo estiver ativo. O comando `MENU` abre o menu mesmo durante esse intervalo.
+- Demais opções: SITE, LANDING PAGE, DESIGN, ARTES, AUTOMACAO, AUTOMAÇÃO, NFC, ORCAMENTO, ORÇAMENTO, HUMANO (todas por mensagem exata e em privado).
+- HUMANO envia confirmação ao cliente e cria uma notificação no painel para atendimento manual. O bot não processa mensagens abertas como IA.
+- Não usar em produção contínua sem avaliar os avisos `npm audit` e revisar a segurança da aplicação e o risco de bloqueio do WhatsApp.
