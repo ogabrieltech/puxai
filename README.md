@@ -15,3 +15,10 @@ DATABASE_URL, AUTH_SECRET, BASE_URL, NEXTAUTH_URL, NEXT_PUBLIC_APP_URL, NEXT_PUB
 The MySQL service must be private, with persistent storage. Use one app replica. Store media on a persistent volume mounted to /app/uploads.
 
 **Security note:** independently audit upgrades to upstream and the generated image before connecting a real business number. Do not use blast features for unsolicited messages. Change your initial admin password after first login.
+
+## Atendimento ogabrieltech (pré-configurado)
+- A sessão `OGT_CUSTOMER_SESSION_ID` recebe 11 respostas por palavra-chave explícita, só em mensagens privadas: MENU, SITE, LANDING PAGE, DESIGN, ARTES, AUTOMACAO/AUTOMAÇÃO, NFC, ORCAMENTO/ORÇAMENTO e HUMANO.
+- Cria 5 etiquetas no painel (a atribuição aos chats é manual).
+- A configuração é idempotente e fica registrada na sessão; mudanças posteriores feitas pelo usuário são preservadas.
+- **Importante:** `BotConfig.enabled = false` na primeira configuração para evitar mensagens automáticas prematuras. Não ativar até correção/revisão das vulnerabilidades de dependências e teste com número secundário.
+- Não envia disparos, não ativa IA, não agenda mensagens e não cria leads automaticamente.

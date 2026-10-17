@@ -9,6 +9,7 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=upstream /wa-akg/ ./
 COPY scripts/patch-upstream.cjs /tmp/patch-upstream.cjs
+COPY scripts/setup-customer-service.cjs ./scripts/setup-customer-service.cjs
 RUN node /tmp/patch-upstream.cjs
 RUN npm ci --legacy-peer-deps && npm cache clean --force
 RUN npx prisma generate && npx next build --webpack
@@ -29,4 +30,4 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma db push && (if [ -n \"$ADMIN_EMAIL\" ] && [ -n \"$ADMIN_PASSWORD\" ]; then node scripts/setup-admin.js \"$ADMIN_EMAIL\" \"$ADMIN_PASSWORD\"; fi) && node node_modules/tsx/dist/cli.mjs src/server/index.ts"]
+CMD ["sh", "-c", "npx prisma db push && (if [ -n \"$ADMIN_EMAIL\" ] && [ -n \"$ADMIN_PASSWORD\" ]; then node scripts/setup-admin.js \"$ADMIN_EMAIL\" \"$ADMIN_PASSWORD\"; fi) && node scripts/setup-customer-service.cjs && node node_modules/tsx/dist/cli.mjs src/server/index.ts"]
