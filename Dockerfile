@@ -16,7 +16,7 @@ RUN npm ci --legacy-peer-deps && npm cache clean --force
 # Pinned security patches: Next.js <= 16.4.0 has an upstream image optimization RCE.
 # React RSC contains known denial-of-service issues in earlier patch lines.
 # The upstream rc9 patch has a stale patch-package version header and should not be applied to patched Baileys rc12.
-RUN rm -f "patches/@whiskeysockets+baileys+7.0.0-rc.9.patch" && npm pkg set "overrides.protobufjs=7.6.6" "overrides.postcss-selector-parser=7.1.6"
+RUN rm -f "patches/@whiskeysockets+baileys+7.0.0-rc.9.patch" && npm pkg set "overrides.protobufjs=7.6.6" "overrides.postcss-selector-parser=7.1.6" "overrides.whatsapp-rust-bridge=0.5.5"
 # Runtime startup requires tsx and Prisma CLI; keep only these tools in production dependencies.
 RUN npm pkg set "dependencies.tsx=4.21.0" "dependencies.typescript=5.9.3" "dependencies.prisma=5.22.0" && npm pkg delete "devDependencies.tsx" "devDependencies.typescript" "devDependencies.prisma"
 RUN npm install --save-exact --legacy-peer-deps next@16.4.1 eslint-config-next@16.4.1 react@19.2.6 react-dom@19.2.6 sharp@0.35.5 next-auth@5.0.0-beta.32 @whiskeysockets/baileys@7.0.0-rc12
