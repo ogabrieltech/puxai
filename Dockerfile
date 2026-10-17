@@ -13,6 +13,11 @@ COPY scripts/setup-customer-service.cjs ./scripts/setup-customer-service.cjs
 COPY scripts/customer-service.ts ./src/modules/whatsapp/store/customer-service.ts
 RUN node /tmp/patch-upstream.cjs
 RUN npm ci --legacy-peer-deps && npm cache clean --force
+# Pinned security patches: Next.js <= 16.4.0 has an upstream image optimization RCE.
+# React RSC contains known denial-of-service issues in earlier patch lines.
+RUN npm install --save-exact --legacy-peer-deps next@16.4.1 eslint-config-next@16.4.1 react@19.2.6 react-dom@19.2.6 sharp@0.35.5
+# Emit machine-readable production audit summary without failing the Docker build.
+RUN npm audit --omit=dev --json > /tmp/security-audit.json || true; node -e 'const a=require("/tmp/security-audit.json"); const v=a.vulnerabilities||{}; console.log("[SECURITY_AUDIT] "+JSON.stringify({counts:a.metadata?.vulnerabilities,critical:Object.entries(v).filter(([k,x])=>x.severity==="critical").map(([k,x])=>({name:k,via:x.via,fix:x.fixAvailable})),high:Object.entries(v).filter(([k,x])=>x.severity==="high").map(([k,x])=>({name:k,fix:x.fixAvailable}))})))'
 RUN npx prisma generate && npx next build --webpack
 RUN npm prune --omit=dev && npm install --no-save tsx typescript prisma@5.22.0
 
