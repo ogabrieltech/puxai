@@ -12,6 +12,15 @@ COPY scripts/patch-upstream.cjs /tmp/patch-upstream.cjs
 COPY scripts/setup-customer-service.cjs ./scripts/setup-customer-service.cjs
 COPY scripts/customer-service.ts ./src/modules/whatsapp/store/customer-service.ts
 RUN node /tmp/patch-upstream.cjs
+# ELFIG private customer-service dashboard — original branding assets, no change to WA sessions
+COPY scripts/elfig-ui.cjs /tmp/elfig-ui.cjs
+COPY scripts/elfig-dashboard.tsx /tmp/elfig-dashboard.tsx
+COPY scripts/elfig-leads.tsx /tmp/elfig-leads.tsx
+COPY scripts/elfig-leads-actions.ts /tmp/elfig-leads-actions.ts
+COPY scripts/elfig-login.tsx /tmp/elfig-login.tsx
+COPY scripts/elfig-logo.svg /tmp/elfig-logo.svg
+COPY scripts/elfig-symbol.svg /tmp/elfig-symbol.svg
+RUN node /tmp/elfig-ui.cjs
 RUN npm ci --legacy-peer-deps && npm cache clean --force
 # Pinned security patches: Next.js <= 16.4.0 has an upstream image optimization RCE.
 # React RSC contains known denial-of-service issues in earlier patch lines.

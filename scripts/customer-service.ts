@@ -6,18 +6,27 @@ import type { WASocket } from "@whiskeysockets/baileys";
 // Receptive only, never broadcasts. CRM state is stored in MySQL.
 type Stage = "NEW" | "WAIT_BRIEF" | "HUMAN" | "OPT_OUT" | "DONE";
 const serviceLabels: Record<string,string> = {
-  sites:"Sites e landing pages", design:"Design e social media",
-  automacao:"Sistemas e automações", nfc:"Placas NFC", outros:"Outros serviços"
+  sites:"Sites e landing pages",
+  marketing:"Marketing digital",
+  branding:"Branding e design",
+  sistemas:"Sistemas personalizados",
+  automacao:"Automações e integrações",
+  suporte:"Suporte de TI",
+  outros:"Outros serviços",
+  design:"Design e social media",
+  nfc:"Placas NFC"
 };
 function normalize(s:string):string {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim().replace(/[!?.]+$/g,"");
 }
 function service(s:string):string|null {
-  if(["1","site","sites","landing","landing page","lp"].includes(s))return "sites";
-  if(["2","design","social media","rede social","redes sociais","post","posts","artes","arte"].includes(s))return "design";
-  if(["3","automacao","automacoes","sistema","sistemas","bot","chatbot","integracao"].includes(s))return "automacao";
-  if(["4","nfc","placa nfc","avaliacao google","avaliacoes google"].includes(s))return "nfc";
-  if(["5","outro","outros","outro servico","outros servicos"].includes(s))return "outros";
+  if(["1","site","sites","website","landing","landing page","lp","ecommerce","e-commerce"].includes(s))return "sites";
+  if(["2","marketing","marketing digital","social media","redes sociais","trafego","trafego pago","anuncios"].includes(s))return "marketing";
+  if(["3","branding","marca","identidade visual","design","artes","arte","posts"].includes(s))return "branding";
+  if(["4","sistemas","sistema","software","desenvolvimento de sistemas","aplicativo","app"].includes(s))return "sistemas";
+  if(["5","automacao","automacoes","integracao","integracoes","bot","chatbot","ia"].includes(s))return "automacao";
+  if(["6","suporte","ti","suporte tecnico","consultoria","manutencao","computador"].includes(s))return "suporte";
+  if(["outro","outros","outros servicos","outro servico"].includes(s))return "outros";
   return null;
 }
 function faq(s:string):string|null {
@@ -82,12 +91,12 @@ export function bindCustomerService(sock:WASocket,sid:string):void{
         const selection=service(v),question=faq(v);
         const menu=["menu","iniciar","reativar","opcoes","voltar ao menu"].includes(v);
         const hello=/^(oi|ola|bom dia|boa tarde|boa noite)(\b|[\s,.!?])/.test(v);
-        const person=["6","humano","atendente","atendimento humano","falar com gabriel"].includes(v);
+        const person=["7","humano","atendente","atendimento humano","falar com um especialista","falar com a elfig"].includes(v);
         const stop=["parar","pausar","sair","cancelar","stop"].includes(v);
         const interest=/vim pelo site|gostaria de um orcamento|quero um orcamento|quero contratar|tenho interesse/.test(v);
         const previous=await prisma.customerLead.findUnique({where:{sessionId_chatJid:{sessionId:session.id,chatJid:jid}}});
         if(previous?.lastMessageKey&&previous.lastMessageKey===msg.key.id)continue;
-        if(!previous&&!selection&&!question&&!menu&&!hello&&!person&&!interest)continue;
+        if(!previous&&!selection&&!question&&!menu&&!hello&&!person&&!interest&&!stop)continue;
         const lead=previous||await prisma.customerLead.create({data:{sessionId:session.id,chatJid:jid,stage:"NEW"}});
         if(!previous)await setLabels(sid,jid,["Novo lead"]);
         const update=(stage:Stage,more:Record<string,unknown>={})=>

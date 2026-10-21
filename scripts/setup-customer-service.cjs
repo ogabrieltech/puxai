@@ -1,108 +1,122 @@
 const {PrismaClient}=require("@prisma/client");
 const prisma=new PrismaClient();
-const VERSION=4;
+const VERSION=5;
 const rules=[
   {
     "keyword": "menu",
-    "response": "*ogabrieltech | Atendimento*\n\nOlá! Sou o assistente de atendimento da ogabrieltech.\n\nComo posso ajudar?\n\n*1* — Sites e landing pages\n*2* — Design e redes sociais\n*3* — Sistemas e automações\n*4* — Placas NFC para avaliações do Google\n*5* — Outros serviços\n*6* — Falar com Gabriel\n\nResponda com o número da opção. Digite *MENU* para voltar.",
+    "response": "*ELFIG | Creative & Technology*\n\nOlá! Este é o atendimento digital da ELFIG.\n\nEm qual área podemos ajudar?\n\n*1* — Sites e landing pages\n*2* — Marketing digital\n*3* — Branding e design\n*4* — Sistemas personalizados\n*5* — Automações e integrações\n*6* — Suporte e consultoria de TI\n*7* — Falar com um especialista\n\nResponda com o número da opção. Para voltar, digite *MENU*. Para parar as respostas automáticas, digite *PARAR*.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "sites",
-    "response": "*Sites e landing pages*\n\nPara preparar seu orçamento, envie em uma mensagem:\n1. Seu nome e nome da empresa\n2. Objetivo do projeto\n3. Serviços ou produtos a apresentar\n4. Prazo desejado\n5. Referências (se tiver)\n\nGabriel avaliará o projeto e confirmará o investimento. Digite *HUMANO* para falar diretamente com ele.",
+    "response": "*Sites e landing pages*\n\nPara prepararmos uma proposta, envie:\n1. Nome e empresa\n2. Tipo de site desejado\n3. Objetivo principal\n4. Referências, se tiver\n5. Prazo desejado\n\nNossa equipe analisará seu projeto. Digite *7* para atendimento humano.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
-    "keyword": "design",
-    "response": "*Design e redes sociais*\n\nMe informe:\n1. Nome da empresa ou perfil\n2. Peças desejadas (posts, carrosséis, identidade visual etc.)\n3. Quantidade aproximada\n4. Prazo desejado\n5. Referências (se tiver)\n\nGabriel avaliará o projeto e confirmará o investimento. Digite *HUMANO* para falar diretamente com ele.",
+    "keyword": "marketing",
+    "response": "*Marketing digital*\n\nConte para a ELFIG:\n1. Nome da empresa e segmento\n2. Objetivo principal (atrair clientes, campanhas, redes sociais etc.)\n3. Canais utilizados atualmente\n4. Necessidade mais urgente\n\nNossa equipe avaliará a melhor abordagem.",
+    "matchType": "EXACT",
+    "triggerType": "PRIVATE",
+    "isMedia": false
+  },
+  {
+    "keyword": "branding",
+    "response": "*Branding e design*\n\nPara começarmos, informe:\n1. Nome da marca\n2. O que precisa criar ou reformular\n3. Referências visuais, se tiver\n4. Prazo desejado\n\nEnviaremos orientações e uma proposta adequada.",
+    "matchType": "EXACT",
+    "triggerType": "PRIVATE",
+    "isMedia": false
+  },
+  {
+    "keyword": "sistemas",
+    "response": "*Sistemas personalizados*\n\nPara compreender a necessidade da sua empresa:\n1. Nome da empresa\n2. Problema ou processo a resolver\n3. Quem utilizará o sistema\n4. Ferramentas existentes\n5. Prazo desejado\n\nA equipe técnica analisará os requisitos.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "automacao",
-    "response": "*Sistemas e automações*\n\nPara entender sua necessidade, envie:\n1. Nome e empresa\n2. O processo que quer automatizar\n3. Ferramentas que já utiliza\n4. Resultado esperado\n5. Prazo desejado\n\nGabriel vai avaliar a viabilidade e elaborar uma proposta.",
+    "response": "*Automações e integrações*\n\nCompartilhe:\n1. Nome e empresa\n2. Processo que deseja automatizar\n3. Ferramentas que já utiliza\n4. Resultado esperado\n5. Prazo desejado\n\nA ELFIG avaliará a solução mais adequada.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
-    "keyword": "nfc",
-    "response": "*Placas NFC para avaliações do Google*\n\nMe diga:\n1. Nome do estabelecimento\n2. Quantidade de placas desejada\n3. Cidade para entrega\n4. Se já possui perfil da empresa no Google\n\nGabriel vai confirmar disponibilidade e valores.",
+    "keyword": "suporte",
+    "response": "*Suporte e consultoria de TI*\n\nInforme:\n1. Nome e empresa\n2. Tipo de equipamento, sistema ou rede\n3. Problema encontrado\n4. Se o atendimento deve ser remoto ou presencial\n5. Urgência\n\nNossa equipe verificará a disponibilidade.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "outros",
-    "response": "*Outros serviços*\n\nDescreva sua necessidade, nome da empresa (se houver), objetivo e prazo desejado. Gabriel avaliará a possibilidade de atendimento.",
+    "response": "*Outros serviços*\n\nDescreva sua necessidade, empresa e prazo. Nossa equipe verificará como ajudar.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "precos",
-    "response": "*Orçamentos*\n\nValores variam de acordo com o tipo e escopo do serviço. Escolha uma opção no *MENU* e descreva sua necessidade para receber uma proposta personalizada.",
+    "response": "*Solicitar orçamento*\n\nOs valores dependem do escopo. Escolha a categoria no *MENU* e envie uma descrição para prepararmos uma proposta.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "prazo",
-    "response": "*Prazo de entrega*\n\nO prazo é informado após avaliação do escopo e materiais necessários. Para solicitar um orçamento, envie *MENU*.",
+    "response": "*Prazos de entrega*\n\nO prazo é confirmado após uma avaliação do projeto. Para começar, digite *MENU*.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "portfolio",
-    "response": "*Projetos e referências*\n\nGabriel poderá apresentar exemplos de trabalhos relevantes para a sua necessidade. Envie *HUMANO* ou escolha o serviço no *MENU*.",
+    "response": "*Portfólio ELFIG*\n\nConheça nossa atuação em branding, websites, sistemas e automações. Nossa equipe pode encaminhar referências de trabalhos relevantes. Digite *7* para falar com um especialista.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "pagamento",
-    "response": "*Condições de pagamento*\n\nAs condições são definidas na proposta comercial. Nunca envie senhas ou dados completos de cartão neste atendimento.",
+    "response": "*Pagamento*\n\nAs condições são informadas na proposta comercial. Não envie senhas nem dados completos de cartão por esta conversa.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "horario",
-    "response": "*Atendimento*\n\nAs solicitações ficam registradas por aqui. O retorno pessoal de Gabriel depende da disponibilidade. Envie *HUMANO* para encaminhar sua dúvida.",
+    "response": "*Horário de atendimento*\n\nSua mensagem fica registrada e será analisada pela equipe conforme a disponibilidade. Para atendimento humano, digite *7*.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "humano",
-    "response": "*Atendimento humano*\n\nEncaminhei esta conversa para Gabriel. Pode explicar o que precisa ou enviar referências e arquivos. O assistente ficará em silêncio para não interromper o atendimento.\n\nDigite *MENU* se quiser reiniciar o atendimento automático.",
+    "response": "*Atendimento humano solicitado*\n\nEncaminhamos seu contato à equipe ELFIG. Pode enviar mais informações e arquivos enquanto aguarda. O atendimento automático ficará em silêncio nesta conversa.\n\nDigite *MENU* quando quiser iniciar um novo atendimento automatizado.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "recebido",
-    "response": "*Solicitação registrada!*\n\nObrigado pelas informações. Gabriel recebeu uma notificação para analisar seu pedido e responder pessoalmente.\n\nSe necessário, envie mais referências nesta conversa. Para voltar ao início, digite *MENU*.",
+    "response": "*Recebemos sua solicitação!*\n\nObrigado pelo briefing. Nossa equipe foi notificada para avaliar seu projeto e entrar em contato.\n\nVocê pode complementar as informações nesta conversa. Para voltar ao início, digite *MENU*.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "complemento",
-    "response": "Pode enviar em uma mensagem seu nome, empresa e uma descrição do serviço desejado? Isso ajuda a preparar uma proposta.",
+    "response": "Por favor, envie seu nome, empresa e uma breve descrição do que precisa, para ajudarmos na análise.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
   },
   {
     "keyword": "optout",
-    "response": "Respostas automáticas desativadas nesta conversa. Para voltar a usá-las, digite *INICIAR*.",
+    "response": "As respostas automáticas foram desativadas nesta conversa. Para reativar, digite *INICIAR*.",
     "matchType": "EXACT",
     "triggerType": "PRIVATE",
     "isMedia": false
@@ -112,52 +126,62 @@ const labels=[
   {
     "name": "Novo lead",
     "color": 6,
-    "colorHex": "#9400D3"
+    "colorHex": "#22D37F"
   },
   {
     "name": "Sites e landing pages",
     "color": 4,
-    "colorHex": "#0000FF"
+    "colorHex": "#0B1F3B"
   },
   {
-    "name": "Design e social media",
+    "name": "Marketing digital",
     "color": 7,
-    "colorHex": "#FF1493"
+    "colorHex": "#087F8C"
   },
   {
-    "name": "Sistemas e automações",
+    "name": "Branding e design",
     "color": 5,
-    "colorHex": "#4B0082"
+    "colorHex": "#8B5CF6"
   },
   {
-    "name": "Placas NFC",
+    "name": "Sistemas personalizados",
     "color": 8,
-    "colorHex": "#00CED1"
+    "colorHex": "#2563EB"
+  },
+  {
+    "name": "Automações e integrações",
+    "color": 10,
+    "colorHex": "#0D9488"
+  },
+  {
+    "name": "Suporte de TI",
+    "color": 3,
+    "colorHex": "#475569"
   },
   {
     "name": "Outros serviços",
     "color": 13,
-    "colorHex": "#2F4F4F"
+    "colorHex": "#64748B"
   },
   {
     "name": "Aguardando cliente",
     "color": 10,
-    "colorHex": "#FFD700"
+    "colorHex": "#F59E0B"
   },
   {
     "name": "Orçamento solicitado",
     "color": 3,
-    "colorHex": "#00FF00"
+    "colorHex": "#16A34A"
   },
   {
     "name": "Atendimento humano",
     "color": 0,
-    "colorHex": "#FF0000"
+    "colorHex": "#DC2626"
   },
   {
     "name": "Concluído",
     "color": 14,
-    "colorHex": "#696969"
+    "colorHex": "#6B7280"
   }
 ];
 async function main(){
@@ -165,13 +189,13 @@ async function main(){
   if(!sid){console.log("[CustomerSetup] Session not configured.");return;}
   const session=await prisma.session.findUnique({where:{sessionId:sid},include:{botConfig:true}});
   if(!session){console.log("[CustomerSetup] Session not found.");return;}
-  const enabled=process.env.OGT_AUTO_REPLY_ENABLED==="true";
+  const enabled=false; // ELFIG upgrade is review-first: never activate a new flow automatically.
   const prev=session.config&&typeof session.config==="object"&&!Array.isArray(session.config)?session.config:{};
-  const versionChanged=prev.ogtCustomerServiceVersion!==VERSION;
+  const versionChanged=prev.elfigCustomerServiceVersion!==VERSION;
   await prisma.botConfig.upsert({
     where:{sessionId:session.id},
-    create:{sessionId:session.id,enabled,botName:"ogabrieltechIA",botMode:"OWNER",autoReplyMode:"ALL",autoRead:false,alwaysOnline:false,enableSticker:false,enableVideoSticker:false,enablePing:false,enableUptime:false},
-    update:{botName:"ogabrieltechIA",botMode:"OWNER",autoReplyMode:"ALL",autoRead:false,alwaysOnline:false,enableSticker:false,enableVideoSticker:false,enablePing:false,...(versionChanged?{enabled}:{})}
+    create:{sessionId:session.id,enabled,botName:"ELFIG",botMode:"OWNER",autoReplyMode:"ALL",autoRead:false,alwaysOnline:false,enableSticker:false,enableVideoSticker:false,enablePing:false,enableUptime:false},
+    update:{botName:"ELFIG",botMode:"OWNER",autoReplyMode:"ALL",autoRead:false,alwaysOnline:false,enableSticker:false,enableVideoSticker:false,enablePing:false,...(versionChanged?{enabled}:{})}
   });
   if(!versionChanged){console.log("[CustomerSetup] Existing flow retained; manual edits preserved. Enabled default: "+enabled);return;}
   for(const rule of rules){
@@ -180,7 +204,7 @@ async function main(){
     else await prisma.autoReply.create({data:{sessionId:session.id,...rule}});
   }
   for(const label of labels) await prisma.label.upsert({where:{sessionId_name:{sessionId:sid,name:label.name}},create:{sessionId:sid,...label},update:{}});
-  await prisma.session.update({where:{sessionId:sid},data:{config:{...prev,ogtCustomerServiceVersion:VERSION}}});
-  console.log("[CustomerSetup] GENERAL FLOW READY: "+rules.length+" templates, "+labels.length+" labels; auto response "+(enabled?"ENABLED":"PAUSED"));
+  await prisma.session.update({where:{sessionId:sid},data:{config:{...prev,elfigCustomerServiceVersion:VERSION}}});
+  console.log("[CustomerSetup] ELFIG FLOW READY: "+rules.length+" templates, "+labels.length+" labels; auto response "+(enabled?"ENABLED":"PAUSED"));
 }
 main().catch(e=>{console.error("[CustomerSetup]",e);process.exitCode=1}).finally(async()=>prisma.$disconnect());
