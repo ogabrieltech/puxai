@@ -37,10 +37,38 @@ function faq(s:string):string|null {
   if(["horario","horarios","funcionamento"].includes(s))return "horario";
   return null;
 }
+// The rate limits below reduce accidental reply floods; they do not bypass WhatsApp enforcement.
+const MAX_REPLIES_PER_CHAT_HOUR=10;
+const MAX_REPLIES_TOTAL_HOUR=80;
+const MIN_REPLY_GAP_MS=3500;
+const replyBudgets=new Map<string,{started:number,count:number,lastSent:number}>();
+const sentByBot=new Map<string,number>();
+function allowReply(jid:string,isPriority:boolean):boolean{
+  if(isPriority)return true; // Explicit requests to stop or speak to a person must be honored.
+  const now=Date.now();
+  const allowed=(key:string,limit:number):boolean=>{
+    const previous=replyBudgets.get(key);
+    const state=previous&&now-previous.started<3600000?previous:{started:now,count:0,lastSent:0};
+    if(state.count>=limit || (key!=="GLOBAL"&&now-state.lastSent<MIN_REPLY_GAP_MS))return false;
+    state.count++;state.lastSent=now;replyBudgets.set(key,state);return true;
+  };
+  const chatKey="CHAT:"+jid;
+  const current=replyBudgets.get(chatKey);
+  const global=replyBudgets.get("GLOBAL");
+  if(current&&now-current.started<3600000&&(current.count>=MAX_REPLIES_PER_CHAT_HOUR||now-current.lastSent<MIN_REPLY_GAP_MS))return false;
+  if(global&&now-global.started<3600000&&global.count>=MAX_REPLIES_TOTAL_HOUR)return false;
+  return allowed(chatKey,MAX_REPLIES_PER_CHAT_HOUR)&&allowed("GLOBAL",MAX_REPLIES_TOTAL_HOUR);
+}
 async function sendTemplate(sock:WASocket,dbId:string,jid:string,key:string):Promise<void>{
   const r=await prisma.autoReply.findFirst({where:{sessionId:dbId,keyword:key,triggerType:"PRIVATE"},select:{response:true}});
   if(!r?.response){logger.error("CustomerService","Missing template "+key);return;}
-  await sock.sendMessage(jid,{text:r.response});
+  if(!allowReply(jid,key==="optout"||key==="humano")){
+    logger.warn("CustomerService","Reply limit reached; no automated message sent");
+    return;
+  }
+  const result=await sock.sendMessage(jid,{text:r.response});
+  if(result?.key?.id)sentByBot.set(jid+":"+result.key.id,Date.now());
+  if(sentByBot.size>500)for(const [k,v] of sentByBot)if(Date.now()-v>3600000)sentByBot.delete(k);
   logger.info("CustomerService","Sent template "+key+" for session "+process.env.OGT_CUSTOMER_SESSION_ID);
 }
 async function setLabels(sid:string,jid:string,add:string[],remove:string[]=[]):Promise<void>{
@@ -83,7 +111,16 @@ export function bindCustomerService(sock:WASocket,sid:string):void{
       registerReminders(sid,session.id,session.userId);
       for(const msg of messages){
         const jid=msg.key.remoteJid;
-        if(!jid||msg.key.fromMe||jid.endsWith("@g.us")||jid.endsWith("@broadcast")||jid==="status@broadcast")continue;
+        if(!jid||jid.endsWith("@g.us")||jid.endsWith("@broadcast")||jid==="status@broadcast")continue;
+        if(msg.key.fromMe){
+          if(msg.key.id&&sentByBot.has(jid+":"+msg.key.id))continue;
+          const previous=await prisma.customerLead.findUnique({where:{sessionId_chatJid:{sessionId:session.id,chatJid:jid}}});
+          if(previous && previous.stage!=="OPT_OUT" && previous.stage!=="HUMAN"){
+            await prisma.customerLead.update({where:{id:previous.id},data:{stage:"HUMAN",lastInteractionAt:new Date()}});
+            logger.info("CustomerService","Manual outgoing reply detected; automation handed off to human");
+          }
+          continue;
+        }
         const c=normalizeMessageContent(msg.message);
         const raw=c?.conversation||c?.extendedTextMessage?.text||"";
         if(!raw||raw.length>3000)continue;
@@ -102,8 +139,12 @@ export function bindCustomerService(sock:WASocket,sid:string):void{
         const update=(stage:Stage,more:Record<string,unknown>={})=>
           prisma.customerLead.update({where:{id:lead.id},data:{stage,lastMessageKey:msg.key.id||null,lastInteractionAt:new Date(),...more}});
         try{
-          if(stop){await update("OPT_OUT");await sendTemplate(sock,session.id,jid,"optout");continue;}
-          if(lead.stage==="OPT_OUT"&&!menu)continue;
+          if(stop){
+            if(lead.stage!=="OPT_OUT"){await update("OPT_OUT");await sendTemplate(sock,session.id,jid,"optout");}
+            continue;
+          }
+          // Opted-out contacts can only reactivate using an explicit INICIAR/REATIVAR command.
+          if(lead.stage==="OPT_OUT"&&!["iniciar","reativar"].includes(v))continue;
           if(menu){await update("NEW",{lastMenuAt:new Date()});await sendTemplate(sock,session.id,jid,"menu");continue;}
           if(lead.stage==="HUMAN"||lead.stage==="DONE")continue;
           if(person){
