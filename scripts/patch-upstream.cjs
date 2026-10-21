@@ -70,10 +70,49 @@ edit("prisma/schema.prisma", s => s + `\n\nmodel CustomerLead {
   lastMenuAt DateTime?
   lastInteractionAt DateTime @default(now())
   lastReminderAt DateTime?
+  // ELFIG CRM commercial fields, independent of the WhatsApp automation state.
+  name String?
+  phone String?
+  company String?
+  email String?
+  leadSource String @default("WHATSAPP")
+  dealStage String @default("NEW")
+  dealValue Decimal? @db.Decimal(12,2)
+  notes String? @db.Text
+  nextFollowUpAt DateTime?
+  contactConsent Boolean @default(false)
+  consentEvidence String? @db.Text
+  consentCapturedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([sessionId, chatJid])
   @@index([sessionId, stage])
+  @@index([sessionId, dealStage])
+  @@index([sessionId, nextFollowUpAt])
+}
+
+model CrmActivity {
+  id String @id @default(cuid())
+  sessionId String
+  leadId String
+  userId String?
+  kind String
+  content String @db.Text
+  createdAt DateTime @default(now())
+  @@index([sessionId, leadId, createdAt])
+}
+
+model CrmTask {
+  id String @id @default(cuid())
+  sessionId String
+  leadId String
+  title String
+  dueAt DateTime?
+  done Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([sessionId, leadId, done])
+  @@index([sessionId, dueAt])
 }
 `);
 edit("src/modules/whatsapp/instance.ts", s => {
