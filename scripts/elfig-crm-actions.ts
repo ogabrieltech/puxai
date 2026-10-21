@@ -25,7 +25,8 @@ function valueMoney(v:string):number|null{
 }
 function phoneValue(raw:string):string{
   let n=raw.replace(/\D/g,"");
-  if(n.length===10||n.length===11)n="55"+n;
+  // Explicit +country numbers are already international; local Brazilian numbers receive +55.
+  if(!raw.trim().startsWith("+")&&(n.length===10||n.length===11))n="55"+n;
   if(!/^\d{11,15}$/.test(n))throw new Error("Informe um telefone com DDD e código do país.");
   return n;
 }
@@ -60,7 +61,9 @@ export async function createCrmLead(form:FormData):Promise<void>{
   const source=field(form,"source");
   const leadSource=sources.includes(source as typeof sources[number])?source:"MANUAL";
   const evidence=field(form,"consentEvidence",1000);
-  const hasConsent=form.get("contactConsent")==="on"&&evidence.length>=5;
+  const requestedConsent=form.get("contactConsent")==="on";
+  if(requestedConsent&&evidence.length<5)throw new Error("Registre como o contato autorizou a abordagem.");
+  const hasConsent=requestedConsent;
   const chatJid=phone+"@s.whatsapp.net";
   const existing=await prisma.customerLead.findUnique({where:{sessionId_chatJid:{sessionId,chatJid}}});
   if(existing)redirect("/dashboard/crm/"+existing.id);
@@ -85,6 +88,7 @@ export async function updateCrmLead(form:FormData):Promise<void>{
   if(!stages.includes(nextStage as typeof stages[number]))throw new Error("Etapa comercial inválida.");
   const evidence=field(form,"consentEvidence",1000);
   const requestedConsent=form.get("contactConsent")==="on";
+  if(requestedConsent&&evidence.length<5&&lead.stage!=="OPT_OUT")throw new Error("Registre a origem da autorização.");
   const consent=requestedConsent&&evidence.length>=5&&lead.stage!=="OPT_OUT";
   // A CRM change never modifies the automation stage, and never bypasses OPT_OUT.
   const notes=field(form,"notes",4000);
