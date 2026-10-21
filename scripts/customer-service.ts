@@ -134,7 +134,17 @@ export function bindCustomerService(sock:WASocket,sid:string):void{
         const previous=await prisma.customerLead.findUnique({where:{sessionId_chatJid:{sessionId:session.id,chatJid:jid}}});
         if(previous?.lastMessageKey&&previous.lastMessageKey===msg.key.id)continue;
         if(!previous&&!selection&&!question&&!menu&&!hello&&!person&&!interest&&!stop)continue;
-        const lead=previous||await prisma.customerLead.create({data:{sessionId:session.id,chatJid:jid,stage:"NEW"}});
+        const incomingPhone=/^\d{11,15}@s\.whatsapp\.net$/.test(jid)?jid.split("@")[0]:null;
+        const incomingName=(msg.pushName||"").trim().slice(0,120)||null;
+        const lead=previous||await prisma.customerLead.create({data:{
+          sessionId:session.id,chatJid:jid,stage:"NEW",name:incomingName,phone:incomingPhone,leadSource:"WHATSAPP"
+        }});
+        if(previous && ((!previous.name&&incomingName)||(!previous.phone&&incomingPhone))){
+          await prisma.customerLead.update({where:{id:previous.id},data:{
+            ...(!previous.name&&incomingName?{name:incomingName}:{}),
+            ...(!previous.phone&&incomingPhone?{phone:incomingPhone}:{})
+          }});
+        }
         if(!previous)await setLabels(sid,jid,["Novo lead"]);
         const update=(stage:Stage,more:Record<string,unknown>={})=>
           prisma.customerLead.update({where:{id:lead.id},data:{stage,lastMessageKey:msg.key.id||null,lastInteractionAt:new Date(),...more}});
