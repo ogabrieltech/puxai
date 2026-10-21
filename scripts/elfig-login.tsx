@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useState } from "react";
+import { Suspense, useState, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
@@ -15,7 +15,7 @@ function SignInForm(){
   const [error,setError]=useState("");
   const [loading,setLoading]=useState(false);
 
-  async function submit(e:React.FormEvent<HTMLFormElement>){
+  async function submit(e:FormEvent<HTMLFormElement>){
     e.preventDefault();
     if(loading)return;
     setLoading(true);setError("");
