@@ -1,6 +1,6 @@
 const {PrismaClient}=require("@prisma/client");
 const prisma=new PrismaClient();
-const VERSION=5;
+const VERSION=6;
 const rules=[
   {
     "keyword": "menu",
@@ -189,13 +189,13 @@ async function main(){
   if(!sid){console.log("[CustomerSetup] Session not configured.");return;}
   const session=await prisma.session.findUnique({where:{sessionId:sid},include:{botConfig:true}});
   if(!session){console.log("[CustomerSetup] Session not found.");return;}
-  const enabled=false; // ELFIG upgrade is review-first: never activate a new flow automatically.
+  const enabled=process.env.ELFIG_AUTO_REPLY_ENABLED==="true"; // User-authorized opt-in; never activates other sessions.
   const prev=session.config&&typeof session.config==="object"&&!Array.isArray(session.config)?session.config:{};
   const versionChanged=prev.elfigCustomerServiceVersion!==VERSION;
   await prisma.botConfig.upsert({
     where:{sessionId:session.id},
-    create:{sessionId:session.id,enabled,botName:"ELFIG",botMode:"OWNER",autoReplyMode:"ALL",autoRead:false,alwaysOnline:false,enableSticker:false,enableVideoSticker:false,enablePing:false,enableUptime:false},
-    update:{botName:"ELFIG",botMode:"OWNER",autoReplyMode:"ALL",autoRead:false,alwaysOnline:false,enableSticker:false,enableVideoSticker:false,enablePing:false,...(versionChanged?{enabled}:{})}
+    create:{sessionId:session.id,enabled,botName:"ELFIG",botMode:"OWNER",autoReplyMode:"ALL",antiSpamEnabled:true,spamLimit:3,spamInterval:10,spamDelayMin:1500,spamDelayMax:3500,autoRead:false,alwaysOnline:false,enableSticker:false,enableVideoSticker:false,enablePing:false,enableUptime:false},
+    update:{botName:"ELFIG",botMode:"OWNER",autoReplyMode:"ALL",antiSpamEnabled:true,spamLimit:3,spamInterval:10,spamDelayMin:1500,spamDelayMax:3500,autoRead:false,alwaysOnline:false,enableSticker:false,enableVideoSticker:false,enablePing:false,...(versionChanged?{enabled}:{})}
   });
   if(!versionChanged){console.log("[CustomerSetup] Existing flow retained; manual edits preserved. Enabled default: "+enabled);return;}
   for(const rule of rules){
