@@ -8,6 +8,9 @@ for(const [source,target] of [
   ["/tmp/elfig-dashboard.tsx","src/app/dashboard/page.tsx"],
   ["/tmp/elfig-leads.tsx","src/app/dashboard/leads/page.tsx"],
   ["/tmp/elfig-leads-actions.ts","src/app/dashboard/leads/actions.ts"],
+  ["/tmp/elfig-crm-page.tsx","src/app/dashboard/crm/page.tsx"],
+  ["/tmp/elfig-crm-detail.tsx","src/app/dashboard/crm/[id]/page.tsx"],
+  ["/tmp/elfig-crm-actions.ts","src/app/dashboard/crm/actions.ts"],
   ["/tmp/elfig-login.tsx","src/app/auth/login/page.tsx"]
 ]){fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(source,target);}
 fs.writeFileSync("src/app/page.tsx",'import { redirect } from "next/navigation";\nexport default function Home(){ redirect("/auth/login"); }\n');
@@ -55,7 +58,8 @@ patch("src/components/dashboard/sidebar-nav.tsx",s=>{
    ['label: "Notifications"','label: "Notificações"']
   ];
   for(const [from,to] of changes)s=s.replaceAll(from,to);
-  s=replace(s,'{ href: "/dashboard", label: "Visão geral", icon: LayoutDashboard },','{ href: "/dashboard", label: "Visão geral", icon: LayoutDashboard },\n            { href: "/dashboard/leads", label: "Oportunidades", icon: Contact },');
+  s=replace(s,'{ href: "/dashboard", label: "Visão geral", icon: LayoutDashboard },','{ href: "/dashboard", label: "Visão geral", icon: LayoutDashboard },\n            { href: "/dashboard/leads", label: "Oportunidades", icon: Contact },
+            { href: "/dashboard/crm", label: "CRM comercial", icon: Users },');
   for(const line of [
    '            { href: "/dashboard/broadcast", label: "Broadcast", icon: Megaphone },\n',
    '            { href: "/dashboard/sticker", label: "Sticker Maker", icon: ImageIcon },\n',
