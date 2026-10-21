@@ -46,7 +46,7 @@ export default async function CrmPage({searchParams}:{searchParams:Promise<{q?:s
           <h1 className="text-3xl font-semibold tracking-[-0.055em] text-[#0B1F3B] sm:text-4xl">CRM e oportunidades</h1>
           <p className="mt-3 text-sm text-[#647487]">Organize leads, negociações e próximos contatos sem perder o histórico.</p>
         </div>
-        <div className="flex flex-wrap gap-2"><a href="/dashboard/crm/export" className="inline-flex items-center rounded-xl border border-[#C7DCD2] bg-white px-4 py-3 text-sm font-semibold text-[#0B1F3B] hover:bg-[#F0F8F4]">Exportar CSV</a><Link href="/dashboard/chat" className="inline-flex items-center gap-2 rounded-xl border border-[#C7DCD2] bg-white px-4 py-3 text-sm font-semibold text-[#0B1F3B] hover:bg-[#F0F8F4]">Abrir conversas <ArrowUpRight size={15}/></Link></div>
+        <div className="flex flex-wrap gap-2"><Link href="/dashboard/crm/nova-mensagem" className="inline-flex items-center gap-2 rounded-xl bg-[#22D37F] px-4 py-3 text-sm font-bold text-[#0B1F3B] hover:bg-[#50E99E]"><Plus size={16}/> Nova mensagem</Link><a href="/dashboard/crm/export" className="inline-flex items-center rounded-xl border border-[#C7DCD2] bg-white px-4 py-3 text-sm font-semibold text-[#0B1F3B] hover:bg-[#F0F8F4]">Exportar CSV</a><Link href="/dashboard/chat" className="inline-flex items-center gap-2 rounded-xl border border-[#C7DCD2] bg-white px-4 py-3 text-sm font-semibold text-[#0B1F3B] hover:bg-[#F0F8F4]">Abrir conversas <ArrowUpRight size={15}/></Link></div>
       </header>
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {[
