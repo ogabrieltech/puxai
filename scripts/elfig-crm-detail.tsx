@@ -158,5 +158,6 @@ export default async function CrmLeadPage({params}:{params:Promise<{id:string}>}
           </dl>
         </section>
       </aside>
-    </div>;
+    </div>
+  </div>;
 }
