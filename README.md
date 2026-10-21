@@ -68,3 +68,20 @@ A produção atual acompanha a branch \`ogabrieltechia-wa-akg\`. Esta branch \`e
 - Permissões por atendente e auditoria de ações.
 - Indicadores por período de tempo e origem de oportunidades.
 - Integração oficial WhatsApp Business Platform, se desejada.
+
+
+## Ativação receptiva e controles de frequência (v6)
+
+A automação da sessão ELFIG só é ativada na primeira execução da v6 quando `ELFIG_AUTO_REPLY_ENABLED=true` estiver definido na Railway. Após a migração, é possível pausar manualmente o bot pelo painel sem que uma simples reinicialização o reative.
+
+Proteções configuradas:
+
+- **Anti-Ban Protection (Beta) do WA-AKG:** ativado; até 3 mensagens a cada 10 segundos, com intervalo de espera entre 1.500 e 3.500 ms quando o limite da fila for excedido. É uma fila de cadência, não uma garantia contra bloqueios.
+- **Limite extra no atendimento receptivo:** até 10 respostas por conversa por hora, 80 respostas no total por hora e pelo menos 3,5 segundos entre respostas comuns na mesma conversa. Comandos PARAR e atendimento humano têm prioridade.
+- **Sem prospecção ativa:** o fluxo só processa mensagens recebidas em conversas individuais na sessão explicitamente configurada.
+- **PARAR:** impede outras respostas; para reativar após optar pela saída, o contato precisa escrever INICIAR ou REATIVAR explicitamente.
+- **Atendimento humano:** o contato pode escolher 7. Mensagens enviadas manualmente também levam o lead para atendimento humano quando reconhecidas no evento de mensagens.
+- **Sem presença artificial:** autoRead e alwaysOnline continuam desligados.
+- A saída para atendimento humano não é uma promessa de IA humana; o cliente vê que está falando com um atendimento digital.
+
+A sessão utiliza Baileys, integração não oficial. A opção de proteção não previne de forma confiável restrições de conta. Para reduzir dependência de conectores não oficiais, a alternativa recomendada é a API oficial WhatsApp Business Platform, com consentimento e templates aprovados quando aplicáveis.
