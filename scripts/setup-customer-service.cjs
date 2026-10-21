@@ -189,7 +189,7 @@ async function main(){
   if(!sid){console.log("[CustomerSetup] Session not configured.");return;}
   const session=await prisma.session.findUnique({where:{sessionId:sid},include:{botConfig:true}});
   if(!session){console.log("[CustomerSetup] Session not found.");return;}
-  const enabled=process.env.OGT_AUTO_REPLY_ENABLED==="true";
+  const enabled=false; // ELFIG upgrade is review-first: never activate a new flow automatically.
   const prev=session.config&&typeof session.config==="object"&&!Array.isArray(session.config)?session.config:{};
   const versionChanged=prev.elfigCustomerServiceVersion!==VERSION;
   await prisma.botConfig.upsert({
