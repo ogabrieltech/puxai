@@ -20,6 +20,7 @@ COPY scripts/elfig-leads-actions.ts /tmp/elfig-leads-actions.ts
 COPY scripts/elfig-crm-page.tsx /tmp/elfig-crm-page.tsx
 COPY scripts/elfig-crm-detail.tsx /tmp/elfig-crm-detail.tsx
 COPY scripts/elfig-crm-actions.ts /tmp/elfig-crm-actions.ts
+COPY scripts/elfig-crm-export.ts /tmp/elfig-crm-export.ts
 COPY scripts/elfig-login.tsx /tmp/elfig-login.tsx
 COPY scripts/elfig-logo.svg /tmp/elfig-logo.svg
 COPY scripts/elfig-symbol.svg /tmp/elfig-symbol.svg
