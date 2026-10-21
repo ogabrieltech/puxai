@@ -58,8 +58,7 @@ patch("src/components/dashboard/sidebar-nav.tsx",s=>{
    ['label: "Notifications"','label: "Notificações"']
   ];
   for(const [from,to] of changes)s=s.replaceAll(from,to);
-  s=replace(s,'{ href: "/dashboard", label: "Visão geral", icon: LayoutDashboard },','{ href: "/dashboard", label: "Visão geral", icon: LayoutDashboard },\n            { href: "/dashboard/leads", label: "Oportunidades", icon: Contact },
-            { href: "/dashboard/crm", label: "CRM comercial", icon: Users },');
+  s=replace(s,'{ href: "/dashboard", label: "Visão geral", icon: LayoutDashboard },','{ href: "/dashboard", label: "Visão geral", icon: LayoutDashboard },\n            { href: "/dashboard/leads", label: "Oportunidades", icon: Contact },\n            { href: "/dashboard/crm", label: "CRM comercial", icon: Users },');
   for(const line of [
    '            { href: "/dashboard/broadcast", label: "Broadcast", icon: Megaphone },\n',
    '            { href: "/dashboard/sticker", label: "Sticker Maker", icon: ImageIcon },\n',
