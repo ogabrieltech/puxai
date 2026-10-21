@@ -11,6 +11,7 @@ for(const [source,target] of [
   ["/tmp/elfig-crm-page.tsx","src/app/dashboard/crm/page.tsx"],
   ["/tmp/elfig-crm-detail.tsx","src/app/dashboard/crm/[id]/page.tsx"],
   ["/tmp/elfig-crm-actions.ts","src/app/dashboard/crm/actions.ts"],
+  ["/tmp/elfig-crm-export.ts","src/app/dashboard/crm/export/route.ts"],
   ["/tmp/elfig-login.tsx","src/app/auth/login/page.tsx"]
 ]){fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(source,target);}
 fs.writeFileSync("src/app/page.tsx",'import { redirect } from "next/navigation";\nexport default function Home(){ redirect("/auth/login"); }\n');
