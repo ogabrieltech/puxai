@@ -11,7 +11,7 @@ for(const [source,target] of [
   ["/tmp/elfig-login.tsx","src/app/auth/login/page.tsx"]
 ]){fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(source,target);}
 fs.writeFileSync("src/app/page.tsx",'import { redirect } from "next/navigation";\nexport default function Home(){ redirect("/auth/login"); }\n');
-fs.writeFileSync("src/app/icon.tsx",'import { readFileSync } from "node:fs";\nimport path from "node:path";\nexport const runtime = "nodejs";\nexport default function Icon(){return new Response(readFileSync(path.join(process.cwd(),"public","elfig-symbol.svg")),{headers:{"Content-Type":"image/svg+xml","Cache-Control":"public,max-age=86400"}});}\n');
+fs.writeFileSync("src/app/icon.tsx",'import { readFileSync } from "node:fs";\nimport path from "node:path";\nexport const runtime = "nodejs";\nexport default function Icon(){return new Response(readFileSync(path.join(process.cwd(),"public","elfig-symbol.svg"),"utf8"),{headers:{"Content-Type":"image/svg+xml","Cache-Control":"public,max-age=86400"}});}\n');
 patch("prisma/schema.prisma",s=>replace(s,'@default("ogabrieltechIA")','@default("ELFIG Atendimento")'));
 patch("scripts/setup-admin.js",s=>replace(s,'appName: "ogabrieltechIA"','appName: "ELFIG Atendimento"').replace('appName: "ogabrieltechIA"','appName: "ELFIG Atendimento"'));
 patch("src/app/layout.tsx",s=>{
