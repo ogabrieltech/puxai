@@ -15,6 +15,8 @@ RUN node /tmp/patch-upstream.cjs
 # ELFIG private customer-service dashboard — original branding assets, no change to WA sessions
 COPY scripts/elfig-ui.cjs /tmp/elfig-ui.cjs
 COPY scripts/elfig-dashboard.tsx /tmp/elfig-dashboard.tsx
+COPY scripts/elfig-leads.tsx /tmp/elfig-leads.tsx
+COPY scripts/elfig-leads-actions.ts /tmp/elfig-leads-actions.ts
 COPY scripts/elfig-login.tsx /tmp/elfig-login.tsx
 COPY scripts/elfig-logo.svg /tmp/elfig-logo.svg
 COPY scripts/elfig-symbol.svg /tmp/elfig-symbol.svg
