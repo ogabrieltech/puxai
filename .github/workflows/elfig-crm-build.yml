@@ -1,0 +1,20 @@
+name: ELFIG CRM build validation
+
+on:
+  pull_request:
+    branches:
+      - ogabrieltechia-wa-akg
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Docker compile and package
+        run: docker build --progress=plain --tag elfig-crm-ci:latest .
