@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { getAccessibleSessions } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { ArrowLeft, ArrowUpRight, CalendarDays, Check, Clock3, MessageCircle, StickyNote } from "lucide-react";
-import { addCrmNote, createCrmTask, toggleCrmTask, updateCrmLead } from "../actions";
+import { addCrmNote, createCrmTask, toggleCrmTask, updateCrmLead, sendCrmMessage } from "../actions";
 
 export const dynamic="force-dynamic";
 const stages=[
@@ -51,6 +51,17 @@ export default async function CrmLeadPage({params}:{params:Promise<{id:string}>}
     {!canInitiate&&<div className="rounded-xl border border-[#F2DDC3] bg-[#FFF8EB] p-4 text-sm leading-6 text-[#805727]">
       {consentBlocked?"O contato optou por não receber respostas automáticas. Não faça novas abordagens comerciais até haver uma nova autorização documentada.":"A opção de iniciar uma conversa comercial permanece indisponível enquanto não existir uma autorização registrada para esse contato. Você ainda pode responder solicitações recebidas na área Conversas."}
     </div>}
+    {canInitiate&&<section className="rounded-2xl border border-[#DCE9E2] bg-white p-6">
+      <div className="flex items-center gap-2"><MessageCircle size={18} className="text-[#0B9869]"/><h2 className="text-lg font-semibold text-[#0B1F3B]">Enviar mensagem pelo CRM</h2></div>
+      <p className="mt-2 text-xs leading-6 text-[#6A7B86]">Envio direto e individual pela sessão conectada. Não é necessário abrir o WhatsApp Web.</p>
+      <form action={sendCrmMessage} className="mt-4 space-y-3">
+        <input type="hidden" name="leadId" value={lead.id}/>
+        <input type="hidden" name="confirmSend" value="yes"/>
+        <textarea name="message" required minLength={2} maxLength={1400} rows={3} placeholder="Escreva sua mensagem para este cliente..." className="w-full rounded-xl border border-[#D6E3DB] p-3 text-sm leading-6"/>
+        <button className="rounded-xl bg-[#22D37F] px-5 py-3 text-sm font-bold text-[#0B1F3B] hover:bg-[#50E99A]">Enviar mensagem agora</button>
+      </form>
+      <p className="mt-3 text-xs text-[#81928B]">Confirme o destinatário antes de enviar. O histórico comercial será atualizado.</p>
+    </section>}
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(300px,1fr)]">
       <div className="space-y-5">
         <section className="rounded-2xl border border-[#DFE9E4] bg-white p-6">
